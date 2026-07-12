@@ -1,0 +1,98 @@
+{
+  "study_mode": {
+    "name": "Study Mode",
+    "description": "Opens browser to academic resources, launches Notepad for study notes, and sets a focus environment.",
+    "steps": [
+      {
+        "action": "open",
+        "target": "https://scholar.google.com"
+      },
+      {
+        "action": "open",
+        "target": "Notepad"
+      },
+      {
+        "action": "type",
+        "target": "Notepad",
+        "text": "=== VEDA AI STUDY NOTES ===\nDate: Today\nTopic:\n\n1. Key Concepts:\n- \n\n2. Summary:\n- \n\n"
+      },
+      {
+        "action": "message",
+        "text": "Study mode activated. Notes template is open and Google Scholar is ready, Rohan."
+      }
+    ]
+  },
+  "coding_session": {
+    "name": "Coding Session",
+    "description": "Launches VS Code, opens Terminal/Command Prompt, and navigates to GitHub.",
+    "steps": [
+      {
+        "action": "open",
+        "target": "vscode"
+      },
+      {
+        "action": "open",
+        "target": "terminal"
+      },
+      {
+        "action": "open",
+        "target": "https://github.com"
+      },
+      {
+        "action": "message",
+        "text": "Coding environment ready. VS Code, Terminal, and GitHub are launched, Rohan."
+      }
+    ]
+  },
+  "deep_work": {
+    "name": "Deep Work",
+    "description": "Minimizes clutter, starts Spotify focus music, and creates a distraction-free environment.",
+    "steps": [
+      {
+        "action": "hotkey",
+        "keys": "win+d"
+      },
+      {
+        "action": "open",
+        "target": "Notepad"
+      },
+      {
+        "action": "message",
+        "text": "Deep work mode initiated. Distractions cleared, focus document ready."
+      }
+    ]
+  },
+  "meeting_setup": {
+    "name": "Meeting Setup",
+    "description": "Prepares meeting notes in Notepad and opens calendar.",
+    "steps": [
+      {
+        "action": "open",
+        "target": "Notepad"
+      },
+      {
+        "action": "type",
+        "target": "Notepad",
+        "text": "=== MEETING NOTES ===\nAttendees:\nAgenda:\n- \n\nAction Items:\n- \n\n"
+      },
+      {
+        "action": "message",
+        "text": "Meeting setup complete. Notes outline prepared."
+      }
+    ]
+  },
+  "relax_mode": {
+    "name": "Relax Mode",
+    "description": "Opens YouTube for relaxing lofi / ambient music.",
+    "steps": [
+      {
+        "action": "open",
+        "target": "https://www.youtube.com/results?search_query=relaxing+lofi+beats"
+      },
+      {
+        "action": "message",
+        "text": "Relax mode activated. Enjoy your break, Rohan."
+      }
+    ]
+  }
+}

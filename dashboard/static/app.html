@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Veda AI — GPT-6 Astra Assistant & Dashboard</title>
+  <script src="/static/crypto.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:        #060709;
+      --surface:   rgba(255, 255, 255, 0.035);
+      --surface-2: rgba(255, 255, 255, 0.065);
+      --border:    rgba(255, 255, 255, 0.10);
+      --border-lit:rgba(255, 170, 48, 0.4);
+      --accent:    #ffaa30;
+      --accent-glow: rgba(255, 170, 48, 0.25);
+      --cyan:      #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.25);
+      --text:      #f4f6fb;
+      --muted:     rgba(255, 255, 255, 0.58);
+      --green:     #10b981;
+    }
+    html, body {
+      height: 100%; width: 100%; margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+    .app-shell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      height: 100%;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      background: rgba(12, 14, 18, 0.8);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 22px 18px;
+      gap: 20px;
+      min-height: 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .logo {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .logo em {
+      color: var(--accent);
+      font-style: normal;
+      text-shadow: 0 0 16px var(--accent-glow);
+    }
+    .badge-astra {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .badge-astra .pulse-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      animation: astraPulse 1.8s infinite;
+    }
+    @keyframes astraPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+    .nav-item .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-item .nav-icon { font-size: 16px; }
+    .nav-item:hover {
+      background: rgba(255, 170, 48, 0.08);
+      border-color: rgba(255, 170, 48, 0.25);
+      color: var(--text);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(255, 170, 48, 0.18), rgba(255, 170, 48, 0.06));
+      border-color: var(--accent);
+      color: var(--text);
+      box-shadow: 0 0 20px rgba(255, 170, 48, 0.15);
+    }
+    .nav-item::after {
+      content: '›';
+      opacity: 0.5;
+      font-size: 16px;
+      transition: transform 0.18s ease;
+    }
+    .nav-item.active::after { transform: translateX(3px); opacity: 1; color: var(--accent); }
+
+    .status-card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 16px;
+      margin-top: auto;
+    }
+    .status-title {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .status-note {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .pill .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #71717a;
+    }
+    .pill.on .dot {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 14px 16px;
+    }
+    .user-icon {
+      width: 40px; height: 40px; border-radius: 14px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, rgba(255, 170, 48, 0.25), rgba(0, 240, 255, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-weight: 800; font-size: 16px; color: var(--text);
+    }
+    .user-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .user-role { font-size: 11px; color: var(--muted); }
+
+    /* ── MAIN CONTENT AREA ── */
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      gap: 16px;
+    }
+
+    /* Views */
+    .view-container {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      gap: 16px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .view-container.active-view {
+      display: flex;
+    }
+    .view-container::-webkit-scrollbar { width: 6px; }
+    .view-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
+
+    /* Topbar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px 24px;
+      border-radius: 24px;
+      background: rgba(12, 14, 18, 0.8);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .page-subtitle {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sys-pill {
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* ── DASHBOARD VIEW: 3D LIVING ORB STAGE ── */
+    .orb-hero-stage {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      min-height: 380px;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at center, rgba(20, 15, 10, 0.6) 0%, rgba(5, 5, 8, 0.98) 100%);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8), 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+    .orb-iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      pointer-events: auto;
+      z-index: 1;
+      opacity: 0.92;
+    }
+    .orb-overlay-header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+    .orb-state-badge {
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(8, 10, 14, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 170, 48, 0.35);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      box-shadow: 0 0 24px rgba(255, 170, 48, 0.2);
+    }
+    .orb-state-badge .orb-pulse-light {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      animation: orbGlow 1.5s infinite alternate;
+    }
+    @keyframes orbGlow {
+      from { transform: scale(0.9); opacity: 0.7; }
+      to { transform: scale(1.3); opacity: 1; box-shadow: 0 0 18px var(--accent); }
+    }
+
+    .orb-quick-controls {
+      pointer-events: auto;
+      display: flex;
+      gap: 8px;
+    }
+    .orb-btn {
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(8, 10, 14, 0.65);
+      backdrop-filter: blur(12px);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .orb-btn:hover {
+      background: rgba(255, 170, 48, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Wave visualizer */
+    .orb-bottom-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      pointer-events: none;
+    }
+    .sound-waves {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 24px;
+    }
+    .wave-bar {
+      width: 3px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 999px;
+      opacity: 0.75;
+      animation: waveMove 1.2s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.1s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+    .wave-bar:nth-child(6) { animation-delay: 0.25s; }
+    .wave-bar:nth-child(7) { animation-delay: 0.15s; }
+    @keyframes waveMove {
+      0%, 100% { height: 6px; }
+      50% { height: 22px; }
+    }
+
+    /* Prompt chips */
+    .prompt-chips {
+      pointer-events: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .chip {
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: rgba(10, 12, 16, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .chip:hover {
+      background: rgba(255, 170, 48, 0.2);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      color: #fff;
+    }
+
+    /* Deck Layout */
+    .dashboard-deck {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 16px;
+      min-height: 0;
+      flex: 1;
+    }
+    .activity-card, .telemetry-card {
+      border: 1px solid var(--border);
+      background: rgba(12, 14, 18, 0.8);
+      backdrop-filter: blur(24px);
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 260px;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .feed-box {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 6px;
+      max-height: 320px;
+    }
+    .feed-box::-webkit-scrollbar { width: 5px; }
+    .feed-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 999px; }
+
+    .msg {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .msg-u {
+      background: rgba(255, 170, 48, 0.12);
+      border: 1px solid rgba(255, 170, 48, 0.3);
+      align-self: flex-end;
+      color: #fff;
+      max-width: 85%;
+    }
+    .msg-j {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      align-self: flex-start;
+      color: var(--text);
+      max-width: 90%;
+      white-space: pre-wrap;
+    }
+    .msg-sys {
+      background: transparent;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      align-self: center;
+    }
+    .msg .lbl {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    /* Telemetry grid */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .metric-box {
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .metric-lbl { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+    .metric-val { font-size: 20px; font-weight: 800; color: var(--text); }
+    .metric-bar { height: 4px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; margin-top: 4px; }
+    .metric-fill { height: 100%; background: var(--accent); width: 0; transition: width 0.4s ease; }
+
+    /* Task Workspace Card */
+    .task-card {
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(0, 240, 255, 0.02));
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .task-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .task-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--cyan); }
+    .task-output { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* ── PLUGINS HUB VIEW ── */
+    .plugins-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+    .plugin-card {
+      border: 1px solid var(--border);
+      background: rgba(12, 14, 18, 0.8);
+      backdrop-filter: blur(20px);
+      border-radius: 22px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .plugin-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 170, 48, 0.4);
+    }
+    .plugin-card.disabled {
+      opacity: 0.55;
+    }
+    .plugin-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .plugin-icon-wrap {
+      width: 46px; height: 46px; border-radius: 16px;
+      display: grid; place-items: center;
+      background: rgba(255, 170, 48, 0.12);
+      border: 1px solid rgba(255, 170, 48, 0.25);
+      font-size: 22px;
+    }
+    .plugin-info { flex: 1; min-width: 0; }
+    .plugin-name { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+    .plugin-cat {
+      display: inline-block;
+      font-size: 10px; font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .plugin-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Switch */
+    .switch {
+      position: relative; display: inline-block; width: 44px; height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: rgba(255, 255, 255, 0.15);
+      transition: .3s; border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: white; transition: .3s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .plugin-prompts {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(0,0,0,0.3);
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .prompt-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+    .prompt-pill {
+      font-size: 11px;
+      color: #cbd5e1;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .prompt-pill:hover {
+      background: rgba(255,170,48,0.2);
+      color: #fff;
+    }
+    .plugin-action-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .plugin-action-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #000;
+    }
+
+    /* ── VEDA HOME VIEW ── */
+    .devices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .device-card {
+      border: 1px solid var(--border);
+      background: rgba(12, 14, 18, 0.8);
+      backdrop-filter: blur(20px);
+      border-radius: 22px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .device-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .device-icon {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: rgba(255,170,48,0.12);
+      color: var(--accent);
+      display: grid; place-items: center;
+      font-size: 20px;
+    }
+    .device-title { font-size: 15px; font-weight: 800; color: var(--text); }
+    .device-type { font-size: 12px; color: var(--muted); }
+    .device-toggle {
+      width: 36px; height: 36px; border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--accent);
+      display: grid; place-items: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* ── SETTINGS VIEW ── */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .settings-card {
+      border: 1px solid var(--border);
+      background: rgba(12, 14, 18, 0.8);
+      backdrop-filter: blur(20px);
+      border-radius: 22px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .setting-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .setting-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ── FOOTER BAR ── */
+    footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-radius: 22px;
+      background: rgba(12, 14, 18, 0.85);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--border);
+    }
+    #inp {
+      flex: 1; min-width: 0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 18px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #inp:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+    .btn {
+      padding: 12px 20px;
+      border-radius: 14px;
+      border: none;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-wake {
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid rgba(0, 240, 255, 0.4);
+      color: var(--cyan);
+    }
+    .btn-wake:hover {
+      background: var(--cyan);
+      color: #000;
+      box-shadow: 0 0 20px var(--cyan-glow);
+    }
+    .btn-send {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-send:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn-icon {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: grid; place-items: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.12); }
+
+    /* Toast */
+    #toast {
+      position: fixed; top: 24px; right: 24px; z-index: 9999;
+      background: rgba(12, 14, 18, 0.95);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    @media (max-width: 1024px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .dashboard-deck { grid-template-columns: 1fr; }
+      .settings-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="toast"></div>
+
+  <div class="app-shell">
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo"><em>Veda AI</em></div>
+        <div class="badge-astra"><span class="pulse-dot"></span>Astra Mode</div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item active" onclick="switchTab('dashboard')">
+          <div class="nav-left"><span class="nav-icon">🌟</span> Dashboard</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('plugins')">
+          <div class="nav-left"><span class="nav-icon">🔌</span> Plugins Hub</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('home')">
+          <div class="nav-left"><span class="nav-icon">🏠</span> Veda Home</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('settings')">
+          <div class="nav-left"><span class="nav-icon">⚙️</span> Settings</div>
+        </div>
+      </nav>
+
+      <div class="status-card">
+        <div class="status-title">System Health</div>
+        <div class="status-note">Autonomous Windows Computer Engine active. All plugins loaded.</div>
+        <div id="pill" class="pill on"><span class="dot"></span><span id="st">Online & Ready</span></div>
+      </div>
+
+      <div class="user-card">
+        <div class="user-icon">R</div>
+        <div>
+          <div class="user-name">Rohan</div>
+          <div class="user-role">Student & Developer</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN PANEL ── -->
+    <section class="main-panel">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div>
+          <div class="page-title" id="page-title">🌟 GPT-6 Astra Living Core</div>
+          <div class="page-subtitle" id="page-subtitle">Autonomous reasoning, desktop actions, and student super-tools.</div>
+        </div>
+        <div class="top-actions">
+          <div class="sys-pill" id="cpu-pill">CPU: 4%</div>
+          <div class="sys-pill" id="ram-pill">RAM: 42%</div>
+          <div class="sys-pill" id="batt-pill">Battery: 98%</div>
+        </div>
+      </div>
+
+      <!-- VIEW 1: DASHBOARD (3D LIVING ORB) -->
+      <div id="view-dashboard" class="view-container active-view">
+        <!-- Living 3D Orb Hero Stage -->
+        <div class="orb-hero-stage">
+          <iframe id="orb-frame" class="orb-iframe" src="/web_background/index.html"></iframe>
+          <div class="orb-overlay-header">
+            <div id="orb-badge" class="orb-state-badge">
+              <span class="orb-pulse-light"></span>
+              <span id="orb-state-text">Core Active — Idle</span>
+            </div>
+            <div class="orb-quick-controls">
+              <button class="orb-btn" onclick="triggerOrbPulse()">✨ Pulse Core</button>
+              <button class="orb-btn" onclick="accelerateOrb()">⚡ Accelerate</button>
+            </div>
+          </div>
+
+          <div class="orb-bottom-bar">
+            <div class="sound-waves">
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+              <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            </div>
+
+            <!-- Quick Action Chips for Student & Computer Control -->
+            <div class="prompt-chips">
+              <span class="chip" onclick="quickRun('What time is it')">🕒 What time is it?</span>
+              <span class="chip" onclick="quickRun('Battery status')">🔋 Battery Status</span>
+              <span class="chip" onclick="quickRun('Start 25 minute pomodoro')">⏱️ 25m Pomodoro</span>
+              <span class="chip" onclick="quickRun('Quiz me on flashcards')">🗂️ Flashcard Quiz</span>
+              <span class="chip" onclick="quickRun('What class do I have next?')">🗓️ Next Class</span>
+              <span class="chip" onclick="quickRun('List my assignments')">📅 Due Homework</span>
+              <span class="chip" onclick="quickRun('Calculate sqrt(144) + 5^2')">🧮 Solve Math</span>
+              <span class="chip" onclick="quickRun('Build a website for a student portfolio')">🌐 Build Website</span>
+              <span class="chip" onclick="quickRun('Take a screenshot')">📷 Screenshot</span>
+              <span class="chip" onclick="quickRun('Clean desktop')">🖥️ Clean Desktop</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lower Deck: Terminal Feed & Assistant Telemetry -->
+        <div class="dashboard-deck">
+          <!-- Terminal Feed -->
+          <div class="activity-card">
+            <div class="card-head">
+              <div class="card-title">Live Interaction Terminal</div>
+              <span style="font-size:11px; color:var(--muted)">Encrypted Local Channel</span>
+            </div>
+            <div id="feed" class="feed-box">
+              <div class="msg msg-j"><div class="lbl">Veda AI</div>Hello Rohan! I am your GPT-6 Astra autonomous assistant. I can operate your computer, run your student workflows, research, and execute all tasks.</div>
+            </div>
+          </div>
+
+          <!-- Telemetry & Task Workspace -->
+          <div class="telemetry-card">
+            <div class="card-head">
+              <div class="card-title">Astra System Status</div>
+              <span style="font-size:11px; color:var(--cyan)">Active</span>
+            </div>
+
+            <div class="task-card" id="task-workspace-card">
+              <div class="task-head">
+                <div class="task-title" id="task-card-title">Autonomous Execution Engine</div>
+                <span id="task-card-pct" style="font-size:11px; color:var(--cyan); font-weight:800">Ready</span>
+              </div>
+              <div class="task-output" id="task-card-desc">Waiting for voice or text prompt. Ready to execute computer tasks.</div>
+            </div>
+
+            <div class="telemetry-grid">
+              <div class="metric-box">
+                <div class="metric-lbl">Active Plugins</div>
+                <div class="metric-val" id="metric-plugins">11</div>
+                <div style="font-size:10px; color:var(--muted)">Student Tools Loaded</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-lbl">Computer Engine</div>
+                <div class="metric-val" style="color:var(--green)">100%</div>
+                <div style="font-size:10px; color:var(--muted)">Full OS Access</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: PLUGINS HUB -->
+      <div id="view-plugins" class="view-container">
+        <div class="plugins-grid" id="plugins-grid-container">
+          <!-- Populated dynamically via JS from /api/plugins -->
+        </div>
+      </div>
+
+      <!-- VIEW 3: VEDA HOME -->
+      <div id="view-home" class="view-container">
+        <div class="devices-grid">
+          <div class="device-card">
+            <div class="device-top">
+              <div class="device-icon">💨</div>
+              <div class="device-toggle" onclick="toggleDevice('fan')">⏻</div>
+            </div>
+            <div>
+              <div class="device-title">Bedroom Fan</div>
+              <div class="device-type">Atomberg Renesa • Speed 4</div>
+            </div>
+          </div>
+          <div class="device-card">
+            <div class="device-top">
+              <div class="device-icon">💡</div>
+              <div class="device-toggle" onclick="toggleDevice('light')">⏻</div>
+            </div>
+            <div>
+              <div class="device-title">Bedroom Light</div>
+              <div class="device-type">Philips Hue Smart Bulb</div>
+            </div>
+          </div>
+          <div class="device-card">
+            <div class="device-top">
+              <div class="device-icon">📺</div>
+              <div class="device-toggle" onclick="toggleDevice('tv')">⏻</div>
+            </div>
+            <div>
+              <div class="device-title">Living Room TV</div>
+              <div class="device-type">LG WebOS Smart TV</div>
+            </div>
+          </div>
+          <div class="device-card">
+            <div class="device-top">
+              <div class="device-icon">🔌</div>
+              <div class="device-toggle" onclick="toggleDevice('plug')">⏻</div>
+            </div>
+            <div>
+              <div class="device-title">Study Room Plug</div>
+              <div class="device-type">TP-Link Kasa Smart Outlet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 4: SETTINGS -->
+      <div id="view-settings" class="view-container">
+        <div class="settings-grid">
+          <div class="settings-card">
+            <div class="card-title">Astra Model & Agent Settings</div>
+            <div class="setting-item">
+              <div>
+                <div class="setting-title">Autonomous Execution</div>
+                <div class="setting-desc">Automatically plan and execute multi-step desktop tasks.</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+              <div>
+                <div class="setting-title">Astra High-Context Mode</div>
+                <div class="setting-desc">Preserve project memory and mid-task instruction steering.</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+              <div>
+                <div class="setting-title">Direct Computer Task Control</div>
+                <div class="setting-desc">Permit opening/closing apps, volume, windows, and desktop files.</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="card-title">Audio & Network Diagnostics</div>
+            <div class="setting-item">
+              <div>
+                <div class="setting-title">Voice Feedback</div>
+                <div class="setting-desc">Speak answers aloud via high-speed native speech synthesizer.</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+            <div class="setting-item">
+              <div>
+                <div class="setting-title">Living Orb Reactor Animation</div>
+                <div class="setting-desc">Real-time WebGL particle glow and bloom shader.</div>
+              </div>
+              <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER COMMAND INPUT -->
+      <footer>
+        <input id="inp" placeholder="Give Veda a command (e.g. 'Solve math', 'Start pomodoro', 'Close notepad', 'Build website')…" autocomplete="off">
+        <label class="btn-icon" for="file-inp" title="Send file">📎</label>
+        <input type="file" id="file-inp" multiple accept="*/*" style="display:none">
+        <button id="mic-btn" class="btn-icon" onclick="doMic()" title="Phone Voice">🎤</button>
+        <button class="btn btn-wake" id="wake" onclick="doWake()">WAKE</button>
+        <button class="btn btn-send" onclick="doSend()">SEND</button>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    // ── Auth ─────────────────────────────────────────────────────────────
+    let _authToken  = sessionStorage.getItem('veda_token');
+    let _sessionKey = sessionStorage.getItem('veda_key');
+    if (!_authToken) {
+      fetch('/api/local-session')
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.ok && data.token) {
+            sessionStorage.setItem('veda_token', data.token);
+            sessionStorage.setItem('veda_key', data.key || 'LOCAL');
+            location.reload();
+          } else {
+            location.replace('/login');
+          }
+        })
+        .catch(() => location.replace('/login'));
+    }
+
+    function _authHeader() { return { 'Authorization': `Bearer ${_authToken}` }; }
+    function _authFetch(url, opts = {}) {
+      opts.headers = Object.assign({}, opts.headers, _authHeader());
+      return fetch(url, opts);
+    }
+
+    // ── Toast ────────────────────────────────────────────────────────────
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2800);
+    }
+
+    // ── Tab Navigation ───────────────────────────────────────────────────
+    const titles = {
+      dashboard: ["🌟 GPT-6 Astra Living Core", "Autonomous reasoning, desktop actions, and student super-tools."],
+      plugins: ["🔌 Student Academic Plugins Hub", "11 installed tools designed for students, research, homework, and exams."],
+      home: ["🏠 Veda Home Automation", "Control smart lights, fan, TV, and room appliances."],
+      settings: ["⚙️ Assistant & OS Settings", "Fine-tune Astra reasoning, voice synthesizer, and OS permissions."]
+    };
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active-view'));
+
+      const targetView = document.getElementById('view-' + tabId);
+      if (targetView) targetView.classList.add('active-view');
+
+      // Highlight nav item
+      const items = document.querySelectorAll('.nav-item');
+      if (tabId === 'dashboard') items[0].classList.add('active');
+      if (tabId === 'plugins')   { items[1].classList.add('active'); loadPlugins(); }
+      if (tabId === 'home')      items[2].classList.add('active');
+      if (tabId === 'settings')  items[3].classList.add('active');
+
+      if (titles[tabId]) {
+        document.getElementById('page-title').textContent = titles[tabId][0];
+        document.getElementById('page-subtitle').textContent = titles[tabId][1];
+      }
+    }
+
+    // ── 3D Living Orb Controls ───────────────────────────────────────────
+    function getOrbWindow() {
+      const frame = document.getElementById('orb-frame');
+      return (frame && frame.contentWindow) ? frame.contentWindow : null;
+    }
+
+    function triggerOrbPulse() {
+      const win = getOrbWindow();
+      if (win && win.triggerPulse) win.triggerPulse();
+    }
+
+    function accelerateOrb() {
+      const win = getOrbWindow();
+      if (win && win.accelerateReactor) win.accelerateReactor();
+      setTimeout(() => {
+        if (win && win.setReactorSpeed) win.setReactorSpeed(2.0);
+      }, 1500);
+    }
+
+    function setOrbState(stateText, accentColor = "#ffaa30") {
+      const badge = document.getElementById('orb-badge');
+      const txt = document.getElementById('orb-state-text');
+      if (txt) txt.textContent = stateText;
+      if (badge) {
+        badge.style.borderColor = accentColor;
+        badge.style.color = accentColor;
+        const light = badge.querySelector('.orb-pulse-light');
+        if (light) light.style.background = accentColor;
+      }
+    }
+
+    // ── WebSocket ────────────────────────────────────────────────────────
+    const feed = document.getElementById('feed');
+    const _wsProto = location.protocol === 'https:' ? 'wss' : 'ws';
+    const _wsUrl   = `${_wsProto}://${location.host}/ws?token=${encodeURIComponent(_authToken)}`;
+    const ws       = new WebSocket(_wsUrl);
+
+    ws.onopen = () => {
+      sys('Connected to Veda AI Core.');
+      toast('Astra Engine Online');
+      setOrbState('Core Active — Idle', '#ffaa30');
+    };
+    ws.onclose = () => {
+      sys('Connection lost — refresh to reconnect.');
+      setOrbState('Core Disconnected', '#ef4444');
+    };
+    ws.onmessage = (e) => {
+      try {
+        const m = JSON.parse(e.data);
+        if (m.type === 'log') {
+          append(m.speaker, m.text);
+          triggerOrbPulse();
+        }
+        if (m.type === 'status') {
+          if (m.state === 'active') {
+            setOrbState('Assistant Active — Listening', '#00f0ff');
+            triggerOrbPulse();
+          } else {
+            setOrbState('Core Active — Idle', '#ffaa30');
+          }
+        }
+        if (m.type === 'task') {
+          updateTaskWorkspace(m.title, m.output, m.percent);
+        }
+        if (m.type === 'sys') sys(m.text);
+      } catch (err) {}
+    };
+
+    function append(speaker, text) {
+      const d = document.createElement('div');
+      const isAI = ['veda echo', 'veda ai', 'veda', 'assistant'].includes((speaker || '').toLowerCase());
+      d.className = isAI ? 'msg msg-j' : 'msg msg-u';
+      d.innerHTML = `<div class="lbl">${isAI ? 'Veda AI' : 'You'}</div>${esc(text)}`;
+      feed.appendChild(d);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function sys(text) {
+      const d = document.createElement('div');
+      d.className = 'msg msg-sys'; d.textContent = text;
+      feed.appendChild(d); feed.scrollTop = feed.scrollHeight;
+    }
+
+    function esc(s) {
+      return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function updateTaskWorkspace(title, output, pct) {
+      const tCard = document.getElementById('task-card-title');
+      const dCard = document.getElementById('task-card-desc');
+      const pCard = document.getElementById('task-card-pct');
+      if (tCard && title) tCard.textContent = title;
+      if (dCard && output) dCard.textContent = output;
+      if (pCard && pct !== undefined) pCard.textContent = pct + '%';
+    }
+
+    // ── Command Dispatch ─────────────────────────────────────────────────
+    function doSend() {
+      const inp = document.getElementById('inp');
+      const text = (inp.value || '').trim();
+      if (!text) return;
+      inp.value = '';
+      append('You', text);
+      setOrbState('Astra Executing Task...', '#00f0ff');
+      accelerateOrb();
+
+      _authFetch('/api/command', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+      }).then(r => r.json()).then(res => {
+        if (!res.ok) toast('Command error: ' + (res.error || 'Failed'));
+      }).catch(err => {
+        toast('Network dispatch error');
+      });
+    }
+
+    function doWake() {
+      triggerOrbPulse();
+      setOrbState('Listening...', '#00f0ff');
+      _authFetch('/api/wake', { method: 'POST' });
+    }
+
+    function quickRun(cmd) {
+      document.getElementById('inp').value = cmd;
+      doSend();
+    }
+
+    document.getElementById('inp').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSend();
+    });
+
+    // ── Plugins Hub Dynamic Loader ───────────────────────────────────────
+    const FALLBACK_PLUGINS = [
+      { id: "flashcards_plugin", name: "Flashcards & Spaced Repetition", icon: "🗂️", category: "Student / Academic", description: "Create, review, and quiz study flashcards with spaced repetition tracking.", sample_prompts: ["Quiz me on flashcards", "Create flashcard Mitosis : Cell division process", "List my flashcards"], enabled: true },
+      { id: "assignment_tracker_plugin", name: "Assignment & Deadline Tracker", icon: "📅", category: "Student / Academic", description: "Organize homework, project milestones, and exam dates with urgency alerts.", sample_prompts: ["List my assignments", "Add assignment Physics Lab Report due Friday", "What assignments are due this week?"], enabled: true },
+      { id: "textbook_summarizer_plugin", name: "Textbook & Research Summarizer", icon: "📖", category: "Student / Academic", description: "Extracts core takeaways, key formulas, and exam-critical definitions from chapters.", sample_prompts: ["Summarize chapter on Photosynthesis", "Create study guide for Operating System Kernels"], enabled: true },
+      { id: "math_science_solver_plugin", name: "Formula & Scientific Math Solver", icon: "🧮", category: "Student / Academic", description: "Step-by-step problem solver for algebra, calculus, physics formulas, and conversions.", sample_prompts: ["Calculate sqrt(144) + 5^2", "Derivative of x^3 + 2x", "Solve equation 2x + 5 = 15"], enabled: true },
+      { id: "code_lab_plugin", name: "Code Lab & CS Homework Assistant", icon: "💻", category: "Student / Academic", description: "Analyzes programming homework, explains bugs, and calculates Big-O complexity.", sample_prompts: ["Explain time complexity of Binary Search", "Debug code IndexError list index out of range", "Big O of Merge Sort"], enabled: true },
+      { id: "citation_generator_plugin", name: "Citation & Bibliography Generator", icon: "📝", category: "Student / Academic", description: "Generates formatted citations in APA 7, MLA 9, IEEE, Chicago, and Harvard.", sample_prompts: ["APA citation for Deep Learning by Goodfellow 2016", "MLA citation for Hamlet by Shakespeare"], enabled: true },
+      { id: "pomodoro_focus_plugin", name: "Pomodoro & Deep Work Coach", icon: "⏱️", category: "Student / Academic", description: "Manages 25/5 and 50/10 focus intervals, tracks study time, and announces breaks.", sample_prompts: ["Start 25 minute pomodoro", "Start 50 minute study session", "Pomodoro status"], enabled: true },
+      { id: "exam_prep_plugin", name: "Quiz & Exam Prep Simulator", icon: "🎯", category: "Student / Academic", description: "Generates practice exams, multiple-choice quizzes, and explains correct answers.", sample_prompts: ["Quiz me on Computer Networks", "Practice test for Machine Learning", "Exam prep for Organic Chemistry"], enabled: true },
+      { id: "quick_notes_plugin", name: "Quick Notes & Lecture Mindmapper", icon: "📓", category: "Student / Academic", description: "Captures timestamped lecture notes and generates visual Markdown mindmaps.", sample_prompts: ["Take note CS301: Midterm covers Dijkstra", "Create mindmap for Machine Learning", "Show my notes"], enabled: true },
+      { id: "grammar_polisher_plugin", name: "Essay & Academic Grammar Polisher", icon: "✍️", category: "Student / Academic", description: "Elevates essays, emails, and reports with formal academic diction and clarity.", sample_prompts: ["Polish essay: We did this experiment to find out if it works", "Make this sound academic: The results show it got better"], enabled: true },
+      { id: "timetable_plugin", name: "Course Schedule & Timetable", icon: "🗓️", category: "Student / Academic", description: "Manages weekly lecture timetables, classroom numbers, and alerts for next class.", sample_prompts: ["What class do I have next?", "Show my class schedule", "Timetable for today"], enabled: true }
+    ];
+
+    function renderPlugins(plugins) {
+      const container = document.getElementById('plugins-grid-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      plugins.forEach(p => {
+        const card = document.createElement('div');
+        card.className = `plugin-card ${p.enabled ? '' : 'disabled'}`;
+        card.id = `card_${p.id}`;
+
+        const promptsHtml = (p.sample_prompts || []).map(pr => 
+          `<span class="prompt-pill" onclick="quickRun('${esc(pr)}')">💬 ${esc(pr)}</span>`
+        ).join('');
+
+        card.innerHTML = `
+          <div>
+            <div class="plugin-top">
+              <div class="plugin-icon-wrap">${p.icon || '🔌'}</div>
+              <div class="plugin-info">
+                <div class="plugin-name">${esc(p.name)}</div>
+                <div class="plugin-cat">${esc(p.category || 'Plugin')}</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" ${p.enabled ? 'checked' : ''} onchange="togglePlugin('${p.id}', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="plugin-desc" style="margin-top:12px">${esc(p.description)}</div>
+          </div>
+
+          <div>
+            <div class="plugin-prompts">
+              <div class="prompt-lbl">Voice & Text Commands</div>
+              ${promptsHtml}
+            </div>
+            <button class="plugin-action-btn" style="margin-top:12px" onclick="quickRun('${esc((p.sample_prompts && p.sample_prompts[0]) || p.name)}')">
+              ⚡ Test Plugin
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function loadPlugins() {
+      _authFetch('/api/plugins')
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.ok && data.plugins && data.plugins.length) {
+            renderPlugins(data.plugins);
+          } else {
+            renderPlugins(FALLBACK_PLUGINS);
+          }
+        })
+        .catch(() => renderPlugins(FALLBACK_PLUGINS));
+    }
+
+    function togglePlugin(pluginId, enabled) {
+      _authFetch('/api/plugins/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pluginId, enabled: enabled })
+      }).then(r => r.json()).then(res => {
+        const card = document.getElementById(`card_${pluginId}`);
+        if (card) {
+          if (enabled) card.classList.remove('disabled');
+          else card.classList.add('disabled');
+        }
+        toast(`Plugin ${enabled ? 'Enabled' : 'Disabled'}`);
+      });
+    }
+
+    // ── System Telemetry Poll ────────────────────────────────────────────
+    function pollSystem() {
+      _authFetch('/api/system-status')
+        .then(r => r.json())
+        .then(data => {
+          if (!data || !data.ok) return;
+          if (data.cpu !== undefined) document.getElementById('cpu-pill').textContent = `CPU: ${data.cpu}%`;
+          if (data.ram !== undefined) document.getElementById('ram-pill').textContent = `RAM: ${data.ram}%`;
+          if (data.battery) {
+            document.getElementById('batt-pill').textContent = `Battery: ${data.battery.percent}%${data.battery.plugged ? ' ⚡' : ''}`;
+          }
+          if (data.plugins_count !== undefined) {
+            document.getElementById('metric-plugins').textContent = data.plugins_count;
+          }
+        })
+        .catch(() => {});
+    }
+    setInterval(pollSystem, 4000);
+    pollSystem();
+    loadPlugins();
+
+    function toggleDevice(dev) {
+      toast(`Toggled ${dev} on/off`);
+      quickRun(`turn on or off ${dev}`);
+    }
+
+    function doMic() {
+      toast('Microphone listening');
+      doWake();
+    }
+  </script>
+</body>
+</html>
