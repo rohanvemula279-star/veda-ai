@@ -11,7 +11,6 @@
     <a href="#getting-started"><img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-lightgrey?style=for-the-badge&logo=windows" alt="Windows Platform" /></a>
     <a href="#architecture"><img src="https://img.shields.io/badge/python-3.11%20%7C%203.12-yellow?style=for-the-badge&logo=python" alt="Python 3.11+" /></a>
     <a href="#core-capabilities"><img src="https://img.shields.io/badge/AI-Gemini%202.5%20%2B%20OpenRouter-green?style=for-the-badge&logo=google" alt="Gemini + OpenRouter" /></a>
-    <a href="https://discord.gg/gEYmJKKtq3"><img src="https://img.shields.io/badge/community-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Community" /></a>
   </p>
 
   <p>
@@ -35,25 +34,26 @@ Whether automating complex desktop workflows, controlling physical appliances ac
 
 ## Core Capabilities Matrix
 
-| Capability Area | Highlights & Features | Powered By |
-|---|---|---|
-| **Voice & Interaction** | Gemini Native Live Voice, Edge-TTS synthesis, true speech interruption (barge-in), dynamic noise-gating, proactive interaction | Google Gemini 2.5 Live, Edge-TTS, SoundDevice |
-| **Desktop Interfaces** | Full-featured PyQt6 command suite + lightweight draggable **Floating Orb Widget** + Local Web Dashboard | PyQt6, FastAPI, WebSockets |
-| **Air Actions (Gestures)** | Touchless webcam hand gesture recognition (palm, swipe, thumbs up/down, peace sign, pinch) | MediaPipe, OpenCV |
-| **Smart Home & IoT** | Unified control for smart fans, lights, switches, ACs, and appliances across 8 major ecosystems | Atomberg, Kasa, Hue, LG, Daikin, Tuya, Nest, SmartThings |
-| **Veda Connect & Android** | Multi-device companion gateway with QR pairing, Zeroconf mDNS discovery, and native Android agent | FastAPI, WebSockets, Android Gradle, Zeroconf |
-| **Encrypted Web Hub** | Local HTTP + WebSocket dashboard on port 8000 with AES-256 encrypted channel & 500MB file transfers | FastAPI, Uvicorn, Cryptography |
-| **Developer & Coding Agent** | Multi-step coding agent, Claude Code bridge, automated test runners, traceback diagnosis, and self-fixing code | Gemini Developer Agent, Subprocess |
-| **Website & Office Builder** | Autonomous responsive website generation (HTML5/CSS/JS) + PowerPoint (`.pptx`), Excel (`.xlsx`), Word (`.docx`), PDF reports | Python-PPTX, OpenPyXL, Python-DocX, ReportLab |
-| **Computer Vision & Fitness** | Live pushup rep counter with motivational voice coach, meal/calorie estimation, posture/attention tracking | MediaPipe Pose, OpenCV, Gemini Vision |
-| **Automations & Scraping** | Headless/headed Playwright browser control, window tiling & snap orchestrator, Downloads/Desktop auto-tidy daemon | Playwright, PyAutoGUI, PyGetWindow, PyWinAuto |
-| **Social & Remote Bridges** | Instagram DM automation & AI auto-reply, multi-server Discord remote control bot, Spotify & media keys | Instagrapi, Discord.py, Chrome Remote |
+| Capability Area               | Highlights & Features                                                                                                          | Powered By                                               |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| **Voice & Interaction**       | Gemini Native Live Voice, Edge-TTS synthesis, true speech interruption (barge-in), dynamic noise-gating, proactive interaction | Google Gemini 2.5 Live, Edge-TTS, SoundDevice            |
+| **Desktop Interfaces**        | Full-featured PyQt6 command suite + lightweight draggable **Floating Orb Widget** + Local Web Dashboard                        | PyQt6, FastAPI, WebSockets                               |
+| **Air Actions (Gestures)**    | Touchless webcam hand gesture recognition (palm, swipe, thumbs up/down, peace sign, pinch)                                     | MediaPipe, OpenCV                                        |
+| **Smart Home & IoT**          | Unified control for smart fans, lights, switches, ACs, and appliances across 8 major ecosystems                                | Atomberg, Kasa, Hue, LG, Daikin, Tuya, Nest, SmartThings |
+| **Veda Connect & Android**    | Multi-device companion gateway with QR pairing, Zeroconf mDNS discovery, and native Android agent                              | FastAPI, WebSockets, Android Gradle, Zeroconf            |
+| **Encrypted Web Hub**         | Local HTTP + WebSocket dashboard on port 8000 with AES-256 encrypted channel & 500MB file transfers                            | FastAPI, Uvicorn, Cryptography                           |
+| **Developer & Coding Agent**  | Multi-step coding agent, Claude Code bridge, automated test runners, traceback diagnosis, and self-fixing code                 | Gemini Developer Agent, Subprocess                       |
+| **Website & Office Builder**  | Autonomous responsive website generation (HTML5/CSS/JS) + PowerPoint (`.pptx`), Excel (`.xlsx`), Word (`.docx`), PDF reports   | Python-PPTX, OpenPyXL, Python-DocX, ReportLab            |
+| **Computer Vision & Fitness** | Live pushup rep counter with motivational voice coach, meal/calorie estimation, posture/attention tracking                     | MediaPipe Pose, OpenCV, Gemini Vision                    |
+| **Automations & Scraping**    | Headless/headed Playwright browser control, window tiling & snap orchestrator, Downloads/Desktop auto-tidy daemon              | Playwright, PyAutoGUI, PyGetWindow, PyWinAuto            |
+| **Social & Remote Bridges**   | Instagram DM automation & AI auto-reply, multi-server Discord remote control bot, Spotify & media keys                         | Instagrapi, Discord.py, Chrome Remote                    |
 
 ---
 
 ## Key Features
 
 ### 🎙️ Conversational Intelligence & Native Voice
+
 - **Gemini Native Voice Audio**: High-fidelity, low-latency live speech recognition and natural voice synthesis.
 - **Resilient AI Failover**: Built with Google Gemini 2.5 as primary intelligence and OpenRouter client fallback resilience for uninterrupted uptime.
 - **True Barge-In Interruption**: Instantly interrupts assistant speech when you speak or press a hotkey, backed by dynamic noise-gating.
@@ -61,13 +61,16 @@ Whether automating complex desktop workflows, controlling physical appliances ac
 - **Smart Memory Manager**: Long-term conversational and preference persistence stored in `workspace_store.py` and `memory/`.
 
 ### 🔮 Floating Desktop Companion Widget
+
 - **Always-on-Top Orb**: A sleek, movable circular widget (`desktop_widget.py`) that floats above all applications.
 - **Live Reactive Animations**: Visual pulsing and glowing states for `idle`, `listening`, `thinking`, `executing`, and `speaking`.
 - **Quick Voice & Text Dictation**: Click or hotkey to trigger instant voice commands or expand the sleek inline text bar.
 - **Lightweight Standalone Mode**: Can be launched independently via `start_widget.cmd` or `python main.py --widget`.
 
 ### ✋ Air Actions (Touchless Hand Gesture Recognition)
+
 Control music, presentations, volume, and desktop capture without touching the mouse or keyboard (`gesture_utils.py`):
+
 - ✋ **Open Palm**: Play / Pause media playback.
 - 👉 **Swipe Right**: Next track or next slide.
 - 👈 **Swipe Left**: Previous track or previous slide.
@@ -77,7 +80,9 @@ Control music, presentations, volume, and desktop capture without touching the m
 - 🤏 **Pinch**: Left mouse click / air cursor trigger.
 
 ### 🏠 Smart Home & IoT Ecosystem
+
 Manage your entire home through dedicated UI cards (`smart_home_page_new.py`) or natural voice prompts:
+
 - **Atomberg Smart Fans & Appliances**: Direct cloud integration with speed controls, timers, and oscillation.
 - **TP-Link Kasa**: Local network discovery and toggle for smart plugs, switches, and multi-color bulbs.
 - **Philips Hue**: Bridge synchronization, room grouping, and scene lighting.
@@ -88,34 +93,40 @@ Manage your entire home through dedicated UI cards (`smart_home_page_new.py`) or
 - **Samsung SmartThings**: Multi-device state tracking and remote triggering.
 
 ### 📱 Veda Connect & Android Companion
+
 - **Local Device Gateway**: High-speed WebSocket transport layer on your local network (`veda_connect/`).
 - **QR-Code Quick Pairing**: Pair Android devices in seconds by scanning the generated QR code.
 - **Zeroconf / mDNS**: Automatic local gateway discovery without manual IP configuration.
 - **Native Android Agent**: Companion APK (`veda-connect-android`) supporting battery level queries, flashlight toggling, remote URL launching, native app execution, and volume synchronization.
 
 ### 🌐 Encrypted Local Web Dashboard (Port 8000)
+
 - **Local Network Access**: Connect from any browser or mobile device on your local WiFi (`http://<PC-IP>:8000`).
 - **Application-Layer Encryption**: Secured with AES-256-CBC using session keys.
 - **File Transfer Hub**: Drag-and-drop file transfers and remote downloads supporting uploads up to 500MB (`Downloads/Veda Uploads`).
 - **Live Assistant Console**: Monitor execution logs, system metrics, and send prompts remotely.
 
 ### 💻 Developer Agent & Claude Code Bridge
+
 - **Autonomous Dev Agent**: Generates code, runs terminal build commands, evaluates test outputs, parses traceback errors, and performs self-healing code fixes (`actions/dev_agent.py`).
 - **Claude Code Bridge**: Integrated workspace bridge (`actions/claude_code_bridge.py`) for specialized development modes.
 - **Full-Stack Website Builder**: Generates production-ready, responsive single-page applications and landing pages with custom themes (split, editorial, command-center, gallery) and an embedded preview server (`actions/website_builder.py`).
 
 ### 🏋️ Fitness, Health & Attention Trackers
+
 - **Pushup Rep Counter**: Computer vision workout tracker powered by MediaPipe/OpenCV (`actions/pushup_counter.py`) with real-time rep counting and playful motivational audio commentary.
 - **Calorie & Meal Analyzer**: Estimate nutritional information and calorie counts from text or image descriptions (`actions/calorie_counter.py`).
 - **Attention & Notification Monitor**: Monitors desktop notifications and incoming communications from Discord, WhatsApp, Telegram, Signal, Teams, Slack, Outlook, and Gmail (`actions/attention_monitor.py`), reading previews aloud via native voice.
 
 ### 📄 Office Suite & Document Generation
+
 - **PowerPoint Decks (`.pptx`)**: Generates styled slide decks with titles, bullets, and themes from natural language prompts.
 - **Spreadsheets (`.xlsx`)**: Creates structured Excel workbooks with formulas, styling, and data tables.
 - **Word Documents (`.docx`)**: Drafts reports, essays, documentation, and summaries.
 - **PDF Publishing**: Compiles structured documents and reports into clean, printable PDFs.
 
 ### 🤖 OS, Browser & Social Automation
+
 - **Playwright Web Automation**: Headless or visual web scraping, form filling, research, and interactive navigation.
 - **Window Orchestrator**: Snap, split, tile, or maximize desktop windows (e.g. split Notepad and Chrome side-by-side).
 - **Auto-Tidy Daemon**: Automated background watcher (`actions/auto_tidy_daemon.py`) that organizes incoming downloads and desktop files into categorized folders (Images, Documents, Videos, Code, Archives).
@@ -166,6 +177,7 @@ graph TD
 ## Getting Started
 
 ### System Prerequisites
+
 - **Operating System**: Windows 10 or Windows 11 (64-bit)
 - **Python**: Python 3.11 or 3.12 installed and added to `PATH`
 - **Node.js**: Node.js 18+ LTS (recommended for web tooling)
@@ -198,18 +210,21 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 If you prefer to configure your environment step-by-step:
 
 #### 1. Clone the repository
+
 ```powershell
 git clone https://github.com/rohanvemula279-star/veda-ai.git
 cd veda-ai
 ```
 
 #### 2. Create and activate a Python virtual environment
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
 #### 3. Install dependencies
+
 ```powershell
 python -m pip install --upgrade pip setuptools wheel
 pip install -r requirements.txt
@@ -233,7 +248,7 @@ Create or edit `config/api_keys.json`:
 
 - **Gemini API Key**: Obtain from [Google AI Studio](https://aistudio.google.com/).
 - **OpenRouter API Key**: Obtain from [OpenRouter](https://openrouter.ai/) (used as an automated fallback provider).
-- **Instagram Credentials** *(Optional)*: Required only if utilizing the Instagram chat daemon.
+- **Instagram Credentials** _(Optional)_: Required only if utilizing the Instagram chat daemon.
 
 ---
 
@@ -242,44 +257,55 @@ Create or edit `config/api_keys.json`:
 Veda AI provides multiple launch targets depending on your preferred workflow:
 
 ### 1. Full Desktop Interface (Standard Mode)
+
 Launches the full PyQt6 visual dashboard with live assistant status, smart home cards, logs, and controls:
+
 ```powershell
 python main.py
 ```
-*Or double-click `start_veda.bat` / `start_veda.cmd`.*
+
+_Or double-click `start_veda.bat` / `start_veda.cmd`._
 
 ### 2. Floating Companion Orb (Lightweight Widget)
+
 Launches only the movable, always-on-top desktop orb widget:
+
 ```powershell
 python main.py --widget
 ```
-*Or execute `start_widget.cmd` or `start_widget.vbs`.*
+
+_Or execute `start_widget.cmd` or `start_widget.vbs`._
 
 ### 3. Silent Background Startup
+
 Runs the desktop assistant silently in the background without persistent console windows:
+
 ```powershell
 start_veda.vbs
 ```
 
 ### 4. Local Web Dashboard
+
 The web dashboard initializes automatically with the app, accessible in your browser at:
+
 ```
 http://localhost:8000
 ```
-*(Or via your computer's local IP address from any phone or tablet on the same Wi-Fi).*
+
+_(Or via your computer's local IP address from any phone or tablet on the same Wi-Fi)._
 
 ---
 
 ## Configuration Reference
 
-| File Path | Description | Key Settings |
-|---|---|---|
-| `config/api_keys.json` | API keys and integration credentials | `gemini_api_key`, `openrouter_api_key`, `instagram_*` |
-| `config/app_settings.json` | Core runtime and UI behavioral flags | `startup_animation_enabled`, `developer_mode_enabled`, `auto_provider_switch` |
-| `config/identity.json` | Assistant persona and user identity | `owner.name`, `assistant.name`, `behavior.mode` (`casual`/`professional`) |
-| `config/discord_bot.json` | Discord remote control configuration | Discord bot token and authorized channel IDs |
-| `config/veda_connect.json` | Device pairing and gateway settings | Gateway port, paired device tokens, discovery flags |
-| `config/auto_tidy_config.json`| Rules for file sorting daemon | Target folders, file extension categories, skip rules |
+| File Path                      | Description                          | Key Settings                                                                  |
+| ------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------- |
+| `config/api_keys.json`         | API keys and integration credentials | `gemini_api_key`, `openrouter_api_key`, `instagram_*`                         |
+| `config/app_settings.json`     | Core runtime and UI behavioral flags | `startup_animation_enabled`, `developer_mode_enabled`, `auto_provider_switch` |
+| `config/identity.json`         | Assistant persona and user identity  | `owner.name`, `assistant.name`, `behavior.mode` (`casual`/`professional`)     |
+| `config/discord_bot.json`      | Discord remote control configuration | Discord bot token and authorized channel IDs                                  |
+| `config/veda_connect.json`     | Device pairing and gateway settings  | Gateway port, paired device tokens, discovery flags                           |
+| `config/auto_tidy_config.json` | Rules for file sorting daemon        | Target folders, file extension categories, skip rules                         |
 
 ---
 
@@ -348,11 +374,13 @@ veda-ai/
 Veda AI supports drop-in modular plugins located in the `plugins/` directory.
 
 ### Supported Lifecycle Hooks
+
 - `on_veda_created(veda)`: Called immediately when the assistant instance initializes.
 - `on_startup(veda)`: Called once all core services, UI, and tools have loaded.
 - `on_text_command(text, source, veda=None)`: Intercepts incoming commands. Return `True` to stop further routing.
 
 ### Registering Custom Tools
+
 Custom actions can be registered with the centralized [Tool Registry](file:///c:/Users/rohan/veda-ai/core/tool_registry.py) with built-in schema validation, risk classification, and verification strategies:
 
 ```python
@@ -403,7 +431,6 @@ pytest
 
 ## Community & Support
 
-- **Discord Community**: [Join the Veda Discord Server](https://discord.gg/gEYmJKKtq3) for updates, discussions, and support.
 - **Issue Tracker**: Report bugs and request features through GitHub Issues.
 
 ---
