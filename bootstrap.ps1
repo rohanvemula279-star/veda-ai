@@ -15,13 +15,13 @@ $WorkingDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 Set-Location -Path $WorkingDir
 
 Write-Host "==========================================================================" -ForegroundColor Cyan
-Write-Host "   __     _______ ____    _       _    ___ " -ForegroundColor Cyan
-Write-Host "   \ \   / / ____|  _ \  / \     / \  |_ _|" -ForegroundColor Cyan
-Write-Host "    \ \ / /|  _|  | | | / _ \   / _ \  | | " -ForegroundColor Cyan
-Write-Host "     \ V / | |___ | |_|/ ___ \ / ___ \ | | " -ForegroundColor Cyan
-Write-Host "      \_/  |_____|____/_/   \_/_/   \_\___|" -ForegroundColor Cyan
+Write-Host "                  __     __  _____   ____       _    " -ForegroundColor Cyan
+Write-Host "                  \ \   / / | ____| |  _ \     / \   " -ForegroundColor Cyan
+Write-Host "                   \ \ / /  |  _|   | | | |   / _ \  " -ForegroundColor Cyan
+Write-Host "                    \ V /   | |___  | |_| |  / ___ \ " -ForegroundColor Cyan
+Write-Host "                     \_/    |_____| |____/  /_/   \_\" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "                      VEDA AI LOADER" -ForegroundColor Green
+Write-Host "                         A I   A S S I S T A N T" -ForegroundColor Green
 Write-Host "==========================================================================" -ForegroundColor Cyan
 Write-Host ""
 
