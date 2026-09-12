@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================================
-REM Script: start_veda.bat
+REM Script: start_veda.cmd
 REM Purpose: Launch Veda AI application or trigger automated bootstrap sequence
 REM Author: Veda AI Team
 REM Date: 2026-09-12

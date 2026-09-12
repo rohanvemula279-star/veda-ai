@@ -694,10 +694,15 @@ class VedaHomePage(QWidget):
 
     def __init__(self, parent=None, smart_home_mgr=None):
         super().__init__(parent)
-        self.mgr = smart_home_mgr or SmartHomeManager()
-        self.device_tiles: list[_DeviceTile] = []
+        self._service = smart_home_mgr or SmartHomeService()
+        self.mgr = self._service
+        self._device_tiles: list[_DeviceTile] = []
+        self.device_tiles: list[_DeviceTile] = self._device_tiles
         self.quick_buttons: list[QPushButton] = []
         self.active_category: str = "all"
+        self._selected_device_id: str | None = None
+        self._drawer_anim = None
+        self._device_columns_cached: int = 0
         self._filter_timer = QTimer(self)
         self._filter_timer.setSingleShot(True)
         self._filter_timer.timeout.connect(self._apply_search_filter)
@@ -1211,6 +1216,9 @@ class VedaHomePage(QWidget):
             self._selected_device_id = None
             self._close_drawer()
             self._refresh()
+
+    def _apply_search_filter(self):
+        self._refresh()
 
     def _refresh(self):
         devices = self._service.list_devices()
